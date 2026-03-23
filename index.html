@@ -2,115 +2,144 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>AgroManager Elite v25</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroManager v26</title>
     <style>
-        :root { --p: #4caf50; --s: #2196f3; --a: #ff9800; --r: #f44336; --m: #00bcd4; --bg: #121212; --card: #1e1e1e; --txt: #e0e0e0; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 0; font-size: 14px; }
-        
-        /* NAWIGACJA - PANCERNA */
-        nav { background: #1b1b1b; border-bottom: 2px solid var(--p); display: flex; justify-content: center; position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; }
-        nav button { background: none; border: none; color: #888; padding: 15px; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 11px; }
+        :root { --p: #4caf50; --s: #2196f3; --a: #ff9800; --r: #f44336; --bg: #121212; --card: #1e1e1e; --txt: #e0e0e0; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 0; }
+        nav { background: #1b1b1b; display: flex; justify-content: space-around; position: sticky; top: 0; border-bottom: 2px solid var(--p); z-index: 100; }
+        nav button { background: none; border: none; color: #888; padding: 15px 5px; cursor: pointer; font-weight: bold; font-size: 10px; }
         nav button.active { color: var(--p); border-bottom: 3px solid var(--p); }
-
-        .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
-        .card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; }
-        
-        /* SELEKCJE */
+        .container { padding: 15px; max-width: 600px; margin: auto; }
         .tab-content { display: none; }
-        .tab-content.active { display: block !important; }
-
-        input, select { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; }
-        button.btn { width: 100%; padding: 12px; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; margin-top: 5px; }
-        
-        /* RAPORTY */
-        .report-card { background: #181818; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid var(--p); }
-        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+        .tab-content.active { display: block; }
+        .card { background: var(--card); padding: 15px; border-radius: 10px; border: 1px solid #333; margin-bottom: 15px; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 5px; box-sizing: border-box; }
+        button.btn { width: 100%; padding: 15px; border: none; border-radius: 5px; color: #fff; font-weight: bold; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px; }
         th, td { padding: 8px; border-bottom: 1px solid #222; text-align: left; }
-        th { color: #555; text-transform: uppercase; font-size: 10px; }
-        .sum-row { background: #222; padding: 10px; margin-top: 5px; font-weight: bold; display: flex; justify-content: space-between; border-radius: 4px; }
-        .plus { color: var(--p); } .minus { color: var(--r); }
     </style>
 </head>
 <body>
 
 <nav>
-    <button onclick="changeTab('f', this)" class="active">🚜 MASZYNY</button>
-    <button onclick="changeTab('p', this)">🌱 POLA</button>
-    <button onclick="changeTab('st', this)">📦 MAGAZYN</button>
-    <button onclick="changeTab('m', this)">🥛 MLEKO</button>
-    <button onclick="changeTab('r', this)">📊 RAPORTY</button>
+    <button onclick="pokaz('f', this)" class="active">MASZYNY</button>
+    <button onclick="pokaz('p', this)">POLA</button>
+    <button onclick="pokaz('st', this)">MAGAZYN</button>
+    <button onclick="pokaz('r', this)">RAPORTY</button>
 </nav>
 
 <div class="container">
-
     <div id="f" class="tab-content active">
         <div class="card">
-            <h3>+ Dodaj Maszynę</h3>
-            <input type="text" id="m_name" placeholder="Nazwa (np. John Deere)">
-            <button class="btn" style="background:var(--p)" onclick="addM()">DODAJ</button>
+            <h3>Dodaj Maszynę</h3>
+            <input type="text" id="m_name" placeholder="np. Case">
+            <button class="btn" style="background:var(--p)" onclick="dodajM()">DODAJ</button>
         </div>
         <div class="card">
-            <h3>⛽ Paliwo i Serwis</h3>
+            <h3>Paliwo i Serwis</h3>
             <select id="m_list"></select>
-            <input type="number" id="m_val" placeholder="Ilość (Litriów / PLN)">
-            <input type="text" id="m_desc" placeholder="Opis (np. Tankowanie)">
-            <button class="btn" style="background:var(--a)" onclick="zapiszM('FUEL')">ZAPISZ PALIWO</button>
-            <button class="btn" style="background:var(--r); margin-top:10px;" onclick="zapiszM('SERVICE')">ZAPISZ SERWIS</button>
+            <input type="number" id="m_val" placeholder="Litrów / PLN">
+            <input type="text" id="m_desc" placeholder="Opis">
+            <button class="btn" style="background:var(--a)" onclick="zapisz('FUEL')">ZAPISZ PALIWO</button>
+            <button class="btn" style="background:var(--r); margin-top:10px;" onclick="zapisz('SERVICE')">ZAPISZ SERWIS</button>
         </div>
     </div>
 
     <div id="p" class="tab-content">
         <div class="card">
-            <h3>+ Nowe Pole</h3>
+            <h3>Nowe Pole</h3>
             <input type="text" id="p_name" placeholder="Nazwa pola">
             <input type="number" id="p_ha" placeholder="Hektary">
-            <button class="btn" style="background:var(--s)" onclick="addP()">DODAJ POLE</button>
+            <button class="btn" style="background:var(--s)" onclick="dodajP()">DODAJ POLE</button>
         </div>
         <div class="card">
-            <h3>🌱 Zabieg</h3>
+            <h3>Zabieg</h3>
             <select id="p_list"></select>
-            <input type="text" id="z_desc" placeholder="Środek / Opis">
-            <input type="number" id="z_cost" placeholder="Koszt całkowity (PLN)">
-            <button class="btn" style="background:var(--s)" onclick="zapiszP()">ZAPISZ PRACĘ</button>
+            <input type="text" id="z_desc" placeholder="Co robione?">
+            <input type="number" id="z_cost" placeholder="Koszt PLN">
+            <button class="btn" style="background:var(--s)" onclick="zapisz('FIELD')">ZAPISZ PRACĘ</button>
         </div>
     </div>
 
     <div id="st" class="tab-content">
         <div class="card">
-            <h3>📦 Magazyn Zboża</h3>
+            <h3>Magazyn</h3>
             <input type="text" id="st_name" placeholder="Towar">
             <input type="number" id="st_qty" placeholder="Tony">
-            <input type="number" id="st_price" placeholder="Cena za tonę (sprzedaż)">
-            <button class="btn" style="background:var(--p)" onclick="zapiszSt('IN')">PRZYJMIJ</button>
-            <button class="btn" style="background:var(--a); margin-top:10px;" onclick="zapiszSt('OUT')">SPRZEDAJ</button>
-        </div>
-    </div>
-
-    <div id="m" class="tab-content">
-        <div class="card">
-            <h3>🥛 Mleko</h3>
-            <input type="number" id="milk_qty" placeholder="Litry">
-            <input type="number" id="milk_price" placeholder="Cena za litr">
-            <button class="btn" style="background:var(--m)" onclick="zapiszMleko()">ZAPISZ UDOJ</button>
+            <button class="btn" style="background:var(--p)" onclick="zapiszST('IN')">PRZYJMIJ</button>
+            <button class="btn" style="background:var(--a); margin-top:10px;" onclick="zapiszST('OUT')">SPRZEDAJ</button>
         </div>
     </div>
 
     <div id="r" class="tab-content">
-        <div id="reports-output"></div>
-        <button onclick="localStorage.clear(); location.reload();" style="color:#444; background:none; border:none; cursor:pointer; width:100%; margin-top:20px;">[ WYCZYŚĆ WSZYSTKO ]</button>
+        <div id="reps"></div>
+        <button onclick="localStorage.clear(); location.reload();" style="color:#444; background:none; border:none; margin-top:20px; width:100%;">[ WYCZYŚĆ WSZYSTKO ]</button>
     </div>
-
 </div>
 
 <script>
     let db = { m: [], p: [], h: [] };
-
-    // Wczytywanie danych
+    
+    // WCZYTYWANIE
     try {
-        const saved = localStorage.getItem('agro_v25_data');
-        if(saved) db = JSON.parse(saved);
+        const s = localStorage.getItem('agro_v26');
+        if(s) db = JSON.parse(s);
     } catch(e) {}
 
-    function changeTab(id, btn) {
-        // Usuwamy klasę active ze wszystkich sekcji i przycisków
-        document.querySelectorAll('.
+    function pokaz(id, btn) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        btn.classList.add('active');
+        if(id === 'r') raporty();
+    }
+
+    function odswiez() {
+        const ml = document.getElementById('m_list');
+        ml.innerHTML = '<option value="">-- wybierz --</option>';
+        db.m.forEach((n, i) => ml.innerHTML += `<option value="${i}">${n}</option>`);
+        const pl = document.getElementById('p_list');
+        pl.innerHTML = '<option value="">-- wybierz --</option>';
+        db.p.forEach((p, i) => pl.innerHTML += `<option value="${i}">${p.n} (${p.h} ha)</option>`);
+    }
+
+    function raporty() {
+        const r = document.getElementById('reps');
+        r.innerHTML = "";
+        const c = { FUEL: "PALIWO", SERVICE: "SERWIS", FIELD: "POLE", STOCK: "MAGAZYN" };
+        for(let k in c) {
+            let fil = db.h.filter(x => x.c === k);
+            let rows = fil.map(x => `<tr><td>${x.d}</td><td>${x.o}</td><td>${x.v}</td></tr>`).join("");
+            r.innerHTML += `<h4>${c[k]}</h4><table>${rows}</table><hr>`;
+        }
+    }
+
+    function dodajM() { const n = document.getElementById('m_name').value; if(n){ db.m.push(n); save(); document.getElementById('m_name').value=""; } }
+    function dodajP() { const n = document.getElementById('p_name').value; const h = document.getElementById('p_ha').value; if(n && h){ db.p.push({n, h}); save(); document.getElementById('p_name').value=""; } }
+
+    function zapisz(c) {
+        const i = document.getElementById(c === 'FIELD' ? 'p_list' : 'm_list').value;
+        const v = document.getElementById(c === 'FIELD' ? 'z_cost' : 'm_val').value;
+        if(i!=="" && v){
+            const o = c === 'FIELD' ? db.p[i].n : db.m[i];
+            db.h.push({d: new Date().toLocaleDateString(), c, o, v: parseFloat(v)});
+            save();
+        }
+    }
+
+    function zapiszST(t) {
+        const n = document.getElementById('st_name').value;
+        const q = document.getElementById('st_qty').value;
+        if(n && q){ db.h.push({d: new Date().toLocaleDateString(), c:'STOCK', o:n, v: t==='IN'?q:-q}); save(); }
+    }
+
+    function save() {
+        localStorage.setItem('agro_v26', JSON.stringify(db));
+        odswiez();
+        alert("Zapisano!");
+    }
+    odswiez();
+</script>
+</body>
+</html>
