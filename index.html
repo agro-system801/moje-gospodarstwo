@@ -143,4 +143,76 @@
 
     function zapiszPaliwo() { 
         let m = document.getElementById('f_mac').value, l = document.getElementById('f_lit').value, c = document.getElementById('f_pln').value;
-        if(m&&l&&c){ db.h.push({t:'PAL', o:m, v:l, c:c, d:new Date().toLocaleDateString()}); save(); document.getElementById('f_lit').value=''; document.getElementById('f_pln').value='';
+        if(m&&l&&c){ db.h.push({t:'PAL', o:m, v:l, c:c, d:new Date().toLocaleDateString()}); save(); document.getElementById('f_lit').value=''; document.getElementById('f_pln').value=''; }
+    }
+
+    function zapiszSerwis() {
+        let m = document.getElementById('s_mac').value, s = document.getElementById('s_txt').value, c = document.getElementById('s_pln').value;
+        if(m&&s&&c){ db.h.push({t:'SER', o:m, s:s, c:c, d:new Date().toLocaleDateString()}); save(); document.getElementById('s_txt').value=''; document.getElementById('s_pln').value=''; }
+    }
+
+    function zapiszPole() {
+        let p = document.getElementById('p_list').value, s = document.getElementById('p_txt').value, c = document.getElementById('p_pln').value;
+        if(p&&c){ db.h.push({t:'POL', o:p, s:s, c:c, d:new Date().toLocaleDateString()}); save(); document.getElementById('p_pln').value=''; }
+    }
+
+    function zapiszMagazyn(typ) {
+        let n = document.getElementById('st_nazwa').value, t = document.getElementById('st_tony').value, z = document.getElementById('st_zysk').value || 0;
+        if(n&&t){ db.h.push({t:typ, o:n, v:t, c:z, d:new Date().toLocaleDateString()}); save(); document.getElementById('st_tony').value=''; document.getElementById('st_zysk').value=''; }
+    }
+
+    function zapiszMleko() {
+        let l = document.getElementById('ml_litry').value, z = document.getElementById('ml_pln').value;
+        if(l&&z){ db.h.push({t:'MLK', o:'Mleko', v:l, c:z, d:new Date().toLocaleDateString()}); save(); document.getElementById('ml_litry').value=''; document.getElementById('ml_pln').value=''; }
+    }
+
+    function save() { localStorage.setItem('agro_v37', JSON.stringify(db)); renderListy(); alert("Zapisano!"); }
+
+    function renderListy() {
+        let m_opts = '<option value="">-- wybierz --</option>'; db.m.forEach(x => m_opts += `<option value="${x}">${x}</option>`);
+        document.querySelectorAll('.sel_m').forEach(s => s.innerHTML = m_opts);
+        let p_opts = '<option value="">-- wybierz --</option>'; db.p.forEach(x => p_opts += `<option value="${x.n}">${x.n} (${x.h}ha)</option>`);
+        document.getElementById('p_list').innerHTML = p_opts;
+    }
+
+    function renderStan() {
+        let s = {};
+        db.h.forEach(x => { if(x.t==='IN') s[x.o]=(s[x.o]||0)+parseFloat(x.v); if(x.t==='OUT') s[x.o]=(s[x.o]||0)-parseFloat(x.v); });
+        let res = ''; for(let k in s) if(s[k]>0) res += `<div>🌾 ${k}: ${s[k]} t</div>`;
+        document.getElementById('stan_txt').innerHTML = res || 'Pusty magazyn';
+    }
+
+    function renderRaport() {
+        let wyd = 0, prz = 0, h_list = '';
+        db.h.slice().reverse().forEach(x => {
+            let kw = parseFloat(x.c), cl = '', txt = '', ico = '';
+            if(x.t==='PAL'){ wyd+=kw; cl='var(--r)'; txt=`Paliwo: ${x.o} (${x.v}L)`; ico='⛽'; }
+            if(x.t==='SER'){ wyd+=kw; cl='var(--r)'; txt=`${x.o}: ${x.s}`; ico='🔧'; }
+            if(x.t==='POL'){ wyd+=kw; cl='var(--r)'; txt=`Pole: ${x.o} (${x.s})`; ico='🌱'; }
+            if(x.t==='MLK'){ prz+=kw; cl='var(--p)'; txt=`Mleko (${x.v}L)`; ico='🥛'; }
+            if(x.t==='OUT'){ prz+=kw; cl='var(--p)'; txt=`Zysk: ${x.o} (${x.v}t)`; ico='💰'; }
+            if(x.t==='IN') { txt=`Zbiór: ${x.o} (${x.v}t)`; ico='📦'; cl='#888'; kw=0; }
+            
+            let kwStr = kw === 0 ? '-' : (x.t==='MLK'||x.t==='OUT' ? '+'+kw : '-'+kw) + ' zł';
+            h_list += `<tr><td style="color:#666">${x.d.slice(0,5)}</td><td><b>${ico} ${txt}</b></td><td style="text-align:right; color:${cl}; font-weight:bold;">${kwStr}</td></tr>`;
+        });
+
+        let bilans = prz - wyd;
+        let html = `
+            <div class="dash-box" style="border-color:${bilans>=0?'var(--p)':'var(--r)'}">
+                <div style="font-size:11px;color:#aaa">BILANS FINANSOWY</div>
+                <div class="dash-val" style="color:${bilans>=0?'var(--p)':'var(--r)'}">${bilans} PLN</div>
+            </div>
+            <div class="flex-box">
+                <div class="flex-item" style="border-color:var(--p)"><div style="font-size:10px;color:#aaa">PRZYCHÓD</div><div style="color:var(--p);font-weight:bold">+${prz}</div></div>
+                <div class="flex-item" style="border-color:var(--r)"><div style="font-size:10px;color:#aaa">WYDATKI</div><div style="color:var(--r);font-weight:bold">-${wyd}</div></div>
+            </div>
+            <table class="list-table">${h_list}</table>
+        `;
+        document.getElementById('raport_content').innerHTML = html;
+    }
+
+    renderListy();
+</script>
+</body>
+</html>
