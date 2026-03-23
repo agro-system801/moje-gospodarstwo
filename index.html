@@ -2,147 +2,67 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AgroManager Elite v28</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroManager v29 - Widok Pełny</title>
     <style>
-        :root { --p: #4caf50; --s: #2196f3; --a: #ff9800; --r: #f44336; --m: #00bcd4; --bg: #121212; --card: #1e1e1e; --txt: #e0e0e0; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 0; font-size: 14px; }
-        
-        /* NAWIGACJA */
-        nav { background: #1b1b1b; border-bottom: 2px solid var(--p); display: flex; justify-content: center; position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; }
-        nav button { background: none; border: none; color: #888; padding: 15px; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 11px; }
-        nav button.active { color: var(--p); border-bottom: 3px solid var(--p); }
-
-        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
-        .card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; }
-        
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        input, select { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; }
-        button.btn { width: 100%; padding: 12px; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; margin-top: 5px; }
-        
-        /* RAPORTY */
-        .report-card { background: #181818; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid var(--p); }
-        h4 { margin-top: 0; color: var(--p); }
-        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
-        th, td { padding: 8px; border-bottom: 1px solid #222; text-align: left; }
-        th { color: #555; text-transform: uppercase; font-size: 10px; }
+        body { font-family: sans-serif; background: #121212; color: #e0e0e0; margin: 0; padding: 15px; }
+        .sekcja { background: #1e1e1e; padding: 20px; border-radius: 12px; border: 2px solid #333; margin-bottom: 40px; }
+        h2 { color: #4caf50; border-bottom: 2px solid #4caf50; padding-bottom: 10px; margin-top: 0; }
+        input, select { width: 100%; padding: 15px; margin: 10px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 18px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 5px; }
+        .b-zielony { background: #4caf50; }
+        .b-pomarancz { background: #ff9800; }
+        .b-niebieski { background: #2196f3; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #181818; }
+        th, td { padding: 10px; border: 1px solid #333; text-align: left; font-size: 13px; }
+        th { background: #222; color: #4caf50; }
     </style>
 </head>
 <body>
 
-<nav>
-    <button onclick="tab('maszyny', this)" class="active">🚜 MASZYNY</button>
-    <button onclick="tab('pola', this)">🌱 POLA</button>
-    <button onclick="tab('magazyn', this)">📦 MAGAZYN</button>
-    <button onclick="tab('mleko', this)">🥛 MLEKO</button>
-    <button onclick="tab('raporty', this)">📊 RAPORTY</button>
-</nav>
+    <h1 style="text-align:center; color:#4caf50;">🚜 AGRO-SYSTEM</h1>
+    <p style="text-align:center; font-size:12px;">Wszystkie działy są poniżej. Przewijaj palcem.</p>
 
-<div class="container">
-    
-    <div id="maszyny" class="tab-content active">
-        <div class="card" style="border-top: 3px solid var(--p)">
-            <h3 style="margin-top:0">+ Dodaj Maszynę</h3>
-            <input type="text" id="m_name" placeholder="Nazwa (np. John Deere)">
-            <button class="btn" style="background:var(--p)" onclick="addM()">DODAJ</button>
-        </div>
-        <div class="card">
-            <h3 style="margin-top:0">⛽ Paliwo i Serwis</h3>
-            <select id="m_list"></select>
-            <input type="number" id="m_val" placeholder="Ilość (Litrów / PLN)">
-            <input type="text" id="m_desc" placeholder="Opis (np. Tankowanie, Filtr oleju)">
-            <button class="btn" style="background:var(--a)" onclick="saveH('PALIWO')">ZAPISZ PALIWO</button>
-            <button class="btn" style="background:var(--r); margin-top:10px;" onclick="saveH('SERWIS')">ZAPISZ SERWIS</button>
-        </div>
+    <div class="sekcja">
+        <h2>🚜 MASZYNY</h2>
+        <input type="text" id="m_nazwa" placeholder="Nazwa maszyny">
+        <button class="b-zielony" onclick="dodajMaszyne()">DODAJ MASZYNĘ</button>
+        <hr style="margin:25px 0; border:1px solid #333;">
+        <select id="m_lista"></select>
+        <input type="number" id="m_litry" placeholder="Ilość litrów">
+        <button class="b-pomarancz" onclick="zapiszPaliwo()">ZAPISZ TANKOWANIE</button>
     </div>
 
-    <div id="pola" class="tab-content">
-        <div class="card" style="border-top: 3px solid var(--s)">
-            <h3 style="margin-top:0">+ Nowe Pole</h3>
-            <input type="text" id="p_name" placeholder="Nazwa pola">
-            <input type="number" id="p_ha" placeholder="Hektary">
-            <button class="btn" style="background:var(--s)" onclick="addP()">DODAJ POLE</button>
-        </div>
-        <div class="card">
-            <h3 style="margin-top:0">🌱 Zabieg na polu</h3>
-            <select id="p_list"></select>
-            <input type="text" id="z_desc" placeholder="Środek / Opis pracy">
-            <input type="number" id="z_cost" placeholder="Koszt całkowity (PLN)">
-            <button class="btn" style="background:var(--s)" onclick="saveH('POLE')">ZAPISZ PRACĘ</button>
-        </div>
+    <div class="sekcja">
+        <h2>🌱 POLA</h2>
+        <input type="text" id="p_nazwa" placeholder="Nazwa pola">
+        <input type="number" id="p_ha" placeholder="Hektary">
+        <button class="b-niebieski" onclick="dodajPole()">DODAJ POLE</button>
     </div>
 
-    <div id="magazyn" class="tab-content">
-        <div class="card" style="border-top: 3px solid var(--a)">
-            <h3 style="margin-top:0">📦 Magazyn Zboża</h3>
-            <input type="text" id="st_name" placeholder="Towar (np. Rzepak)">
-            <input type="number" id="st_qty" placeholder="Ilość ton">
-            <input type="number" id="st_price" placeholder="Cena za tonę (tylko przy sprzedaży)">
-            <button class="btn" style="background:var(--p)" onclick="saveH('MAG_IN')">PRZYJMIJ NA STAN</button>
-            <button class="btn" style="background:var(--a); margin-top:10px;" onclick="saveH('MAG_OUT')">SPRZEDAJ</button>
-        </div>
+    <div class="sekcja">
+        <h2>📊 RAPORTY</h2>
+        <div id="wynik_m"></div>
+        <div id="wynik_p"></div>
+        <div id="wynik_h"></div>
+        <button onclick="localStorage.clear(); location.reload();" style="background:none; border:1px solid red; color:red; margin-top:50px;">WYCZYŚĆ WSZYSTKO</button>
     </div>
-
-    <div id="mleko" class="tab-content">
-        <div class="card" style="border-top: 3px solid var(--m)">
-            <h3 style="margin-top:0">🥛 Mleko</h3>
-            <input type="number" id="milk_qty" placeholder="Ilość litrów">
-            <button class="btn" style="background:var(--m)" onclick="saveH('MLEKO')">ZAPISZ UDOJ</button>
-        </div>
-    </div>
-
-    <div id="raporty" class="tab-content">
-        <div id="reports-output"></div>
-        <button onclick="localStorage.clear(); location.reload();" style="color:#ff4444; background:none; border:1px solid #ff4444; border-radius:5px; padding:15px; cursor:pointer; width:100%; margin-top:20px; font-weight:bold;">⚠️ WYCZYŚĆ WSZYSTKIE DANE Z TELEFONU</button>
-    </div>
-
-</div>
 
 <script>
-    // Inicjalizacja bazy danych (pancerna metoda)
-    let db = JSON.parse(localStorage.getItem('agro_v28')) || { m: [], p: [], h: [] };
+    // BAZA DANYCH
+    var baza = JSON.parse(localStorage.getItem('agro_v29')) || { maszyny: [], pola: [], historia: [] };
 
-    function tab(id, btn) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        btn.classList.add('active');
-        render(); // Zawsze odświeża dane przy wejściu
-    }
+    function odswiezWidok() {
+        // Lista w select
+        var s = document.getElementById('m_lista');
+        s.innerHTML = '<option value="">-- wybierz maszynę --</option>';
+        baza.maszyny.forEach(function(m) { s.innerHTML += '<option value="'+m+'">'+m+'</option>'; });
 
-    function addM() {
-        let n = document.getElementById('m_name').value;
-        if(n) { db.m.push(n); document.getElementById('m_name').value=''; save(); }
-    }
-
-    function addP() {
-        let n = document.getElementById('p_name').value;
-        let h = document.getElementById('p_ha').value;
-        if(n && h) { db.p.push({n:n, h:h}); document.getElementById('p_name').value=''; document.getElementById('p_ha').value=''; save(); }
-    }
-
-    function saveH(type) {
-        let date = new Date().toLocaleDateString();
+        // Tabela Maszyn
+        document.getElementById('wynik_m').innerHTML = '<h4>Maszyny:</h4>' + baza.maszyny.join(", ");
         
-        if(type === 'PALIWO' || type === 'SERWIS') {
-            let m = document.getElementById('m_list').value;
-            let v = document.getElementById('m_val').value;
-            let d = document.getElementById('m_desc').value || 'Brak opisu';
-            if(m && v) { db.h.push({d:date, cat:type, obj:m, desc:d, val:v + (type==='PALIWO'?' L':' PLN')}); document.getElementById('m_val').value=''; document.getElementById('m_desc').value=''; save(); }
-        }
-        else if(type === 'POLE') {
-            let p = document.getElementById('p_list').value;
-            let c = document.getElementById('z_cost').value;
-            let d = document.getElementById('z_desc').value || 'Brak opisu';
-            if(p && c) { db.h.push({d:date, cat:type, obj:p, desc:d, val:c + ' PLN'}); document.getElementById('z_cost').value=''; document.getElementById('z_desc').value=''; save(); }
-        }
-        else if(type === 'MAG_IN' || type === 'MAG_OUT') {
-            let n = document.getElementById('st_name').value;
-            let q = document.getElementById('st_qty').value;
-            let p = document.getElementById('st_price').value || '';
-            let desc = type === 'MAG_IN' ? 'Przyjęto' : ('Sprzedano' + (p ? ` po ${p} zł` : ''));
-            let val = type === 'MAG_IN' ? (q + ' t') : ('-' + q + ' t');
-            if(n && q) { db.h.push({d:date, cat:'MAGAZYN', obj:n, desc:desc, val:val}); document.getElementById('st_qty').value=''; save(); }
-        }
+        // Tabela Pól
+        document.getElementById('wynik_p').innerHTML = '<h4>Pola:</h4>' + baza.pola.map(function(p){ return p.n + ' (' + p.h + ' ha)'; }).join(", ");
+
+        // Tabela Historii
+        var hHtml
