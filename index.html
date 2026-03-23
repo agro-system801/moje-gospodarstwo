@@ -2,130 +2,42 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgroManager Elite v31</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AgroManager PRO v32</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #121212; color: #eee; margin: 0; }
-        #status { text-align: center; padding: 12px; font-weight: bold; background: #222; font-size: 12px; text-transform: uppercase; }
-        .nav { display: flex; background: #1b1b1b; padding: 5px; border-bottom: 2px solid #4caf50; position: sticky; top: 0; }
-        .nav button { flex: 1; background: none; border: none; color: #888; padding: 15px 5px; font-weight: bold; cursor: pointer; font-size: 12px; }
-        .nav button.active { color: #4caf50; border-bottom: 3px solid #4caf50; }
-        .tab { display: none; padding: 15px; max-width: 800px; margin: auto; }
-        .card { background: #1e1e1e; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #333; }
+        :root { --p: #4caf50; --s: #2196f3; --a: #ff9800; --r: #f44336; --m: #00bcd4; --bg: #121212; --card: #1e1e1e; --txt: #e0e0e0; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 0; font-size: 14px; }
+        
+        /* Pasek nawigacji */
+        .nav { display: flex; background: #1b1b1b; padding: 5px; border-bottom: 2px solid var(--p); position: sticky; top: 0; z-index: 100; flex-wrap: wrap; }
+        .nav button { flex: 1 1 18%; background: none; border: none; color: #888; padding: 12px 2px; font-weight: bold; cursor: pointer; font-size: 11px; }
+        .nav button.active { color: var(--p); border-bottom: 3px solid var(--p); }
+        
+        /* Główne okno */
+        .tab { display: none; padding: 15px; max-width: 800px; margin: auto; padding-bottom: 80px; }
+        .card { background: var(--card); padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #333; }
         h3 { margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        input, select { width: 100%; padding: 15px; margin: 10px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; font-size: 15px; }
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 6px; font-weight: bold; color: #fff; cursor: pointer; font-size: 14px; margin-top: 5px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #333; }
-        th { color: #4caf50; }
+        
+        /* Formularze */
+        label { font-size: 11px; color: #aaa; text-transform: uppercase; margin-top: 10px; display: block; }
+        input, select { width: 100%; padding: 12px; margin: 5px 0 15px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 6px; font-weight: bold; color: #fff; cursor: pointer; font-size: 14px; text-transform: uppercase; }
+        
+        /* Raporty */
+        .rep-sekcja { background: #181818; padding: 10px; border-radius: 8px; margin-top: 15px; border-left: 4px solid; }
+        .rep-suma { background: #222; padding: 10px; font-weight: bold; display: flex; justify-content: space-between; border-radius: 4px; margin-top: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #333; }
+        th { color: #888; font-size: 10px; text-transform: uppercase; }
+        .zysk { color: var(--p); } .koszt { color: var(--r); }
     </style>
 </head>
 <body>
 
-<div id="status" style="color: #ffeb3b;">⏳ Trwa ładowanie systemu... Jeśli to czytasz, przeglądarka całkowicie zablokowała skrypty!</div>
-
 <div class="nav">
-    <button id="b_m" onclick="go('m')">🚜 MASZYNY</button>
+    <button id="b_m" onclick="go('m')" class="active">🚜 MASZYNY</button>
     <button id="b_p" onclick="go('p')">🌱 POLA</button>
+    <button id="b_st" onclick="go('st')">📦 MAGAZYN</button>
+    <button id="b_ml" onclick="go('ml')">🥛 MLEKO</button>
     <button id="b_r" onclick="go('r')">📊 RAPORTY</button>
 </div>
-
-<div id="t_m" class="tab">
-    <div class="card" style="border-top: 3px solid #4caf50;">
-        <h3 style="color:#4caf50;">+ Dodaj Maszynę</h3>
-        <input type="text" id="m_in" placeholder="Nazwa (np. Case)">
-        <button class="btn" style="background:#4caf50;" onclick="addM()">DODAJ MASZYNĘ</button>
-    </div>
-    <div class="card">
-        <h3 style="color:#ff9800;">⛽ Tankowanie / Serwis</h3>
-        <select id="m_sel"></select>
-        <input type="number" id="m_val" placeholder="Litrów / PLN">
-        <button class="btn" style="background:#ff9800; color:#000;" onclick="addH('PALIWO')">ZAPISZ PALIWO</button>
-        <button class="btn" style="background:#f44336; margin-top:10px;" onclick="addH('SERWIS')">ZAPISZ SERWIS</button>
-    </div>
-</div>
-
-<div id="t_p" class="tab">
-    <div class="card" style="border-top: 3px solid #2196f3;">
-        <h3 style="color:#2196f3;">+ Dodaj Pole</h3>
-        <input type="text" id="p_in" placeholder="Nazwa pola">
-        <button class="btn" style="background:#2196f3;" onclick="addP()">DODAJ POLE</button>
-    </div>
-</div>
-
-<div id="t_r" class="tab">
-    <div class="card" id="rep_out" style="border-top: 3px solid #9c27b0;"></div>
-</div>
-
-<script>
-    let db = { m: [], p: [], h: [] };
-    let memoryWorks = true;
-
-    // MAGIA ODPORNOŚCI NA BŁĘDY OPERY
-    window.onload = function() {
-        try {
-            let saved = localStorage.getItem('agro_v31');
-            if(saved) db = JSON.parse(saved);
-            document.getElementById('status').innerText = "✅ SYSTEM GOTOWY (Zapis działa)";
-            document.getElementById('status').style.color = "#4caf50";
-        } catch(e) {
-            memoryWorks = false;
-            document.getElementById('status').innerText = "⚠️ BŁĄD ZAPISU! (Wyłącz tryb prywatny / tarcze w Operze). Zapis działa tylko tymczasowo.";
-            document.getElementById('status').style.color = "#f44336";
-        }
-        go('m');
-    };
-
-    function go(id) {
-        document.querySelectorAll('.tab').forEach(t => t.style.display = 'none');
-        document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
-        document.getElementById('t_' + id).style.display = 'block';
-        document.getElementById('b_' + id).classList.add('active');
-        render();
-    }
-
-    function addM() {
-        let v = document.getElementById('m_in').value;
-        if(v) { db.m.push(v); document.getElementById('m_in').value=''; save(); }
-    }
-
-    function addP() {
-        let v = document.getElementById('p_in').value;
-        if(v) { db.p.push(v); document.getElementById('p_in').value=''; save(); }
-    }
-
-    function addH(type) {
-        let obj = document.getElementById('m_sel').value;
-        let val = document.getElementById('m_val').value;
-        if(obj && val) { 
-            db.h.push({ d: new Date().toLocaleDateString(), t: type, o: obj, v: val });
-            document.getElementById('m_val').value='';
-            save(); 
-        }
-    }
-
-    function save() {
-        if(memoryWorks) {
-            try { localStorage.setItem('agro_v31', JSON.stringify(db)); } catch(e){}
-        }
-        alert("✔️ Wykonano! Przejdź do zakładki RAPORTY.");
-        render();
-    }
-
-    function render() {
-        let sel = document.getElementById('m_sel');
-        sel.innerHTML = '<option value="">-- wybierz maszynę --</option>';
-        db.m.forEach(x => sel.innerHTML += '<option value="'+x+'">'+x+'</option>');
-
-        let out = document.getElementById('rep_out');
-        out.innerHTML = '<h4 style="color:#4caf50;">🚜 Twoje Maszyny:</h4>' + (db.m.join(', ') || 'Brak dodanych maszyn.') + 
-                        '<h4 style="color:#2196f3; margin-top:20px;">🌱 Twoje Pola:</h4>' + (db.p.join(', ') || 'Brak dodanych pól.');
-        
-        let table = '<h4 style="color:#ff9800; margin-top:30px;">📋 Historia:</h4><table><tr><th>Data</th><th>Typ</th><th>Maszyna</th><th>Wartość</th></tr>';
-        db.h.forEach(x => table += '<tr><td>'+x.d+'</td><td>'+x.t+'</td><td>'+x.o+'</td><td><b>'+x.v+'</b></td></tr>');
-        table += '</table>';
-        out.innerHTML += table;
-    }
-</script>
-</body>
-</html>
