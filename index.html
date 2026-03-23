@@ -3,50 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AgroManager PRO v36</title>
+    <title>AgroManager PRO v37</title>
     <style>
         :root { --p: #4caf50; --s: #2196f3; --a: #ff9800; --r: #f44336; --m: #00bcd4; --bg: #121212; --card: #1e1e1e; --txt: #e0e0e0; }
         body { font-family: sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 0; }
+        
+        /* NAWIGACJA - PANCERNA */
         nav { background: #1b1b1b; display: flex; overflow-x: auto; border-bottom: 2px solid var(--p); position: sticky; top: 0; z-index: 1000; }
-        nav button { flex: 1; min-width: 75px; background: none; border: none; color: #888; padding: 15px 5px; font-weight: bold; font-size: 10px; cursor: pointer; }
+        nav button { flex: 1; min-width: 75px; background: none; border: none; color: #888; padding: 15px 5px; font-weight: bold; font-size: 10px; cursor: pointer; text-transform: uppercase; }
         nav button.active { color: var(--p); border-bottom: 3px solid var(--p); }
-        .container { padding: 15px; max-width: 600px; margin: auto; padding-bottom: 50px; }
+
+        .container { padding: 15px; max-width: 600px; margin: auto; padding-bottom: 60px; }
+        
+        /* KARTY - UKRYTE DOMYŚLNIE */
         .tab { display: none; }
-        .tab.active { display: block !important; }
+        
         .card { background: var(--card); padding: 15px; border-radius: 10px; border: 1px solid #333; margin-bottom: 15px; }
         input, select { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
         .btn { width: 100%; padding: 15px; border: none; border-radius: 6px; color: #fff; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 5px; }
         label { font-size: 11px; color: #aaa; text-transform: uppercase; margin-top: 5px; display: block; }
         
-        /* Styl nowego raportu */
-        .dash-box { background: #222; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px; }
-        .dash-title { font-size: 12px; color: #aaa; margin-bottom: 5px; font-weight:bold; }
-        .dash-val { font-size: 24px; font-weight: bold; }
+        /* RAPORT STYLE */
+        .dash-box { background: #222; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px; border: 1px solid #444; }
+        .dash-val { font-size: 26px; font-weight: bold; margin-top: 5px; }
         .flex-box { display: flex; gap: 10px; margin-bottom: 15px; }
-        .flex-box > div { flex: 1; padding: 10px; background: #181818; border-radius: 8px; text-align: center; }
+        .flex-item { flex: 1; padding: 10px; background: #181818; border-radius: 8px; text-align: center; border-left: 3px solid; }
         .list-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
         .list-table td { padding: 10px 5px; border-bottom: 1px solid #333; }
     </style>
 </head>
 <body>
 
-<nav>
-    <button onclick="go('m', this)" class="active">MASZYNY</button>
-    <button onclick="go('p', this)">POLA</button>
-    <button onclick="go('st', this)">MAGAZYN</button>
-    <button onclick="go('ml', this)">MLEKO</button>
-    <button onclick="go('r', this)">RAPORTY</button>
+<nav id="mainNav">
+    <button onclick="pokaz('m', this)" class="active">MASZYNY</button>
+    <button onclick="pokaz('p', this)">POLA</button>
+    <button onclick="pokaz('st', this)">MAGAZYN</button>
+    <button onclick="pokaz('ml', this)">MLEKO</button>
+    <button onclick="pokaz('r', this)">RAPORTY</button>
 </nav>
 
 <div class="container">
     
-    <div id="t_m" class="tab active">
+    <div id="tab_m" class="tab" style="display:block;">
         <div class="card" style="border-top: 3px solid var(--p)">
-            <h3 style="color:var(--p); margin-top:0;">🚜 Maszyny</h3>
-            <input type="text" id="m_new" placeholder="Nazwa (np. Case Puma)">
-            <button class="btn" style="background:var(--p)" onclick="addM()">DODAJ MASZYNĘ</button>
+            <h3 style="color:var(--p); margin-top:0;">🚜 Dodaj Maszynę</h3>
+            <input type="text" id="new_m" placeholder="Nazwa (np. Case Puma)">
+            <button class="btn" style="background:var(--p)" onclick="dodajMaszyne()">ZAPISZ MASZYNĘ</button>
         </div>
         <div class="card" style="border-top: 3px solid var(--a)">
             <h3 style="color:var(--a); margin-top:0;">⛽ Tankowanie</h3>
-            <label>Data</label><input type="date" class="data-input" id="f_date">
-            <label>C
+            <label>Ciągnik</label><select class="sel_m" id="f_mac"></select>
+            <label>Litry</label><input type="number" id="f_lit" placeholder="Ilość litrów">
+            <label>Koszt (PLN)</label><input type="number" id="f_pln" placeholder="Suma zł">
+            <button class="btn" style="background:var(--a)" onclick="zapiszPaliwo()">ZAPISZ PALIWO</button>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--r)">
+            <h3 style="color:var(--r); margin-top:0;">🔧 Serwis / Części</h3>
+            <label>Ciągnik</label><select class="sel_m" id="s_mac"></select>
+            <label>Jaka część?</label><input type="text" id="s_txt" placeholder="np. Olej, Opony">
+            <label>Koszt (PLN)</label><input type="number" id="s_pln" placeholder="Suma zł">
+            <button class="btn" style="background:var(--r)" onclick="zapiszSerwis()">ZAPISZ SERWIS</button>
+        </div>
+    </div>
+
+    <div id="tab_p" class="tab">
+        <div class="card" style="border-top: 3px solid var(--s)">
+            <h3 style="color:var(--s); margin-top:0;">🌱 Pola</h3>
+            <input type="text" id="new_p" placeholder="Nazwa pola">
+            <input type="number" id="p_ha" placeholder="Hektary">
+            <button class="btn" style="background:var(--s)" onclick="dodajPole()">DODAJ POLE</button>
+        </div>
+        <div class="card">
+            <h3>Zabieg</h3>
+            <select id="p_list"></select>
+            <input type="text" id="p_txt" placeholder="np. Siew pszenicy">
+            <input type="number" id="p_pln" placeholder="Koszt PLN">
+            <button class="btn" style="background:var(--s)" onclick="zapiszPole()">ZAPISZ PRACĘ</button>
+        </div>
+    </div>
+
+    <div id="tab_st" class="tab">
+        <div class="card" style="border-top: 3px solid #ffc107">
+            <h3 style="color:#ffc107; margin-top:0;">📦 Magazyn</h3>
+            <div id="stan_txt" style="font-weight:bold; margin-bottom:15px;"></div>
+            <input type="text" id="st_nazwa" placeholder="Towar (np. Pszenica)">
+            <input type="number" id="st_tony" placeholder="Tony">
+            <input type="number" id="st_zysk" placeholder="Zysk (tylko przy sprzedaży)">
+            <div style="display:flex; gap:10px;">
+                <button class="btn" style="background:var(--p)" onclick="zapiszMagazyn('IN')">PRZYJMIJ</button>
+                <button class="btn" style="background:var(--a)" onclick="zapiszMagazyn('OUT')">SPRZEDAJ</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab_ml" class="tab">
+        <div class="card" style="border-top: 3px solid var(--m)">
+            <h3 style="color:var(--m); margin-top:0;">🥛 Mleko</h3>
+            <input type="number" id="ml_litry" placeholder="Ilość litrów">
+            <input type="number" id="ml_pln" placeholder="Zysk PLN">
+            <button class="btn" style="background:var(--m)" onclick="zapiszMleko()">ZAPISZ MLEKO</button>
+        </div>
+    </div>
+
+    <div id="tab_r" class="tab">
+        <div id="raport_content">Ładowanie...</div>
+        <button onclick="if(confirm('Wyczyścić wszystko?')){localStorage.clear();location.reload();}" style="background:none; border:1px solid red; color:red; padding:10px; width:100%; margin-top:30px; border-radius:5px; font-size:10px;">USUŃ DANE</button>
+    </div>
+
+</div>
+
+<script>
+    let db = { m: [], p: [], h: [] };
+    try { let s = localStorage.getItem('agro_v37'); if(s) db = JSON.parse(s); } catch(e) {}
+
+    // PANCERNE PRZEŁĄCZANIE KART
+    function pokaz(id, el) {
+        // Ukryj wszystko
+        document.getElementById('tab_m').style.display = 'none';
+        document.getElementById('tab_p').style.display = 'none';
+        document.getElementById('tab_st').style.display = 'none';
+        document.getElementById('tab_ml').style.display = 'none';
+        document.getElementById('tab_r').style.display = 'none';
+        
+        // Pokaż wybrane
+        document.getElementById('tab_' + id).style.display = 'block';
+        
+        // Klasa aktywna dla przycisku
+        let btns = document.getElementById('mainNav').getElementsByTagName('button');
+        for(let i=0; i<btns.length; i++) btns[i].classList.remove('active');
+        el.classList.add('active');
+
+        // Odśwież widoki specjalne
+        if(id === 'st') renderStan();
+        if(id === 'r') renderRaport();
+    }
+
+    function dodajMaszyne() { let v = document.getElementById('new_m').value; if(v){db.m.push(v); save(); document.getElementById('new_m').value='';} }
+    function dodajPole() { let n = document.getElementById('new_p').value; let h = document.getElementById('p_ha').value; if(n){db.p.push({n:n, h:h}); save(); document.getElementById('new_p').value='';} }
+
+    function zapiszPaliwo() { 
+        let m = document.getElementById('f_mac').value, l = document.getElementById('f_lit').value, c = document.getElementById('f_pln').value;
+        if(m&&l&&c){ db.h.push({t:'PAL', o:m, v:l, c:c, d:new Date().toLocaleDateString()}); save(); document.getElementById('f_lit').value=''; document.getElementById('f_pln').value='';
