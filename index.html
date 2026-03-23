@@ -3,22 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AgroManager PRO v33</title>
+    <title>AgroManager PRO v36</title>
     <style>
         :root { --p: #4caf50; --s: #2196f3; --a: #ff9800; --r: #f44336; --m: #00bcd4; --bg: #121212; --card: #1e1e1e; --txt: #e0e0e0; }
         body { font-family: sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 0; }
         nav { background: #1b1b1b; display: flex; overflow-x: auto; border-bottom: 2px solid var(--p); position: sticky; top: 0; z-index: 1000; }
-        nav button { flex: 1; min-width: 80px; background: none; border: none; color: #888; padding: 15px 5px; font-weight: bold; font-size: 10px; cursor: pointer; }
+        nav button { flex: 1; min-width: 75px; background: none; border: none; color: #888; padding: 15px 5px; font-weight: bold; font-size: 10px; cursor: pointer; }
         nav button.active { color: var(--p); border-bottom: 3px solid var(--p); }
-        .container { padding: 15px; max-width: 600px; margin: auto; }
+        .container { padding: 15px; max-width: 600px; margin: auto; padding-bottom: 50px; }
         .tab { display: none; }
         .tab.active { display: block !important; }
         .card { background: var(--card); padding: 15px; border-radius: 10px; border: 1px solid #333; margin-bottom: 15px; }
         input, select { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 6px; color: #fff; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px; }
-        th, td { padding: 8px; border-bottom: 1px solid #333; text-align: left; }
-        .koszt { color: var(--r); } .zysk { color: var(--p); }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 6px; color: #fff; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 5px; }
+        label { font-size: 11px; color: #aaa; text-transform: uppercase; margin-top: 5px; display: block; }
+        
+        /* Styl nowego raportu */
+        .dash-box { background: #222; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px; }
+        .dash-title { font-size: 12px; color: #aaa; margin-bottom: 5px; font-weight:bold; }
+        .dash-val { font-size: 24px; font-weight: bold; }
+        .flex-box { display: flex; gap: 10px; margin-bottom: 15px; }
+        .flex-box > div { flex: 1; padding: 10px; background: #181818; border-radius: 8px; text-align: center; }
+        .list-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+        .list-table td { padding: 10px 5px; border-bottom: 1px solid #333; }
     </style>
 </head>
 <body>
@@ -32,127 +39,14 @@
 </nav>
 
 <div class="container">
+    
     <div id="t_m" class="tab active">
-        <div class="card">
-            <h3>🚜 Maszyny</h3>
-            <input type="text" id="m_new" placeholder="Nazwa maszyny">
+        <div class="card" style="border-top: 3px solid var(--p)">
+            <h3 style="color:var(--p); margin-top:0;">🚜 Maszyny</h3>
+            <input type="text" id="m_new" placeholder="Nazwa (np. Case Puma)">
             <button class="btn" style="background:var(--p)" onclick="addM()">DODAJ MASZYNĘ</button>
-            <hr style="margin:20px 0; border:0; border-top:1px solid #333;">
-            <select id="m_list"></select>
-            <input type="date" id="m_date">
-            <input type="number" id="m_lit" placeholder="Ilość (L/PLN)">
-            <input type="text" id="m_desc" placeholder="Opis (np. Paliwo, Serwis)">
-            <button class="btn" style="background:var(--a)" onclick="saveH('M')">ZAPISZ WPIS</button>
         </div>
-    </div>
-
-    <div id="t_p" class="tab">
-        <div class="card">
-            <h3>🌱 Pola</h3>
-            <input type="text" id="p_new" placeholder="Nazwa pola">
-            <input type="number" id="p_ha" placeholder="Hektary">
-            <button class="btn" style="background:var(--s)" onclick="addP()">DODAJ POLE</button>
-            <hr style="margin:20px 0; border:0; border-top:1px solid #333;">
-            <select id="p_list"></select>
-            <input type="date" id="p_date">
-            <input type="text" id="p_desc" placeholder="Co robione?">
-            <input type="number" id="p_cost" placeholder="Koszt PLN">
-            <button class="btn" style="background:var(--s)" onclick="saveH('P')">ZAPISZ PRACĘ</button>
-        </div>
-    </div>
-
-    <div id="t_st" class="tab">
-        <div class="card">
-            <h3>📦 Magazyn</h3>
-            <div id="st_stan" style="margin-bottom:15px; font-weight:bold; color:var(--a)"></div>
-            <input type="text" id="st_name" placeholder="Towar">
-            <input type="number" id="st_qty" placeholder="Tony">
-            <input type="number" id="st_price" placeholder="Cena (przy sprzedaży)">
-            <button class="btn" style="background:var(--p)" onclick="saveH('SIN')">PRZYJMIJ</button>
-            <button class="btn" style="background:var(--a); margin-top:10px;" onclick="saveH('SOUT')">SPRZEDAJ</button>
-        </div>
-    </div>
-
-    <div id="t_ml" class="tab">
-        <div class="card">
-            <h3>🥛 Mleko</h3>
-            <input type="date" id="ml_date">
-            <input type="number" id="ml_qty" placeholder="Litry">
-            <input type="number" id="ml_money" placeholder="Zysk PLN">
-            <button class="btn" style="background:var(--m)" onclick="saveH('ML')">ZAPISZ MLEKO</button>
-        </div>
-    </div>
-
-    <div id="t_r" class="tab">
-        <div class="card">
-            <h3>📊 Raporty</h3>
-            <div id="rep_out">Brak danych.</div>
-            <button onclick="localStorage.clear(); location.reload();" style="background:none; border:1px solid red; color:red; font-size:10px; margin-top:30px; width:100%; padding:10px;">USUŃ DANE</button>
-        </div>
-    </div>
-</div>
-
-<script>
-    let db = { m: [], p: [], h: [] };
-    try { 
-        let s = localStorage.getItem('agro_v33'); 
-        if(s) db = JSON.parse(s); 
-    } catch(e) {}
-
-    window.onload = function() {
-        let dzis = new Date().toISOString().split('T')[0];
-        document.querySelectorAll('input[type="date"]').forEach(i => i.value = dzis);
-        render();
-    };
-
-    function go(id, btn) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        document.getElementById('t_'+id).classList.add('active');
-        btn.classList.add('active');
-        if(id === 'r') raport();
-        if(id === 'st') renderStan();
-    }
-
-    function addM() { let v = document.getElementById('m_new').value; if(v){db.m.push(v); save(); document.getElementById('m_new').value='';}}
-    function addP() { let v = document.getElementById('p_new').value; let h = document.getElementById('p_ha').value; if(v){db.p.push({n:v, h:h}); save(); document.getElementById('p_new').value='';}}
-
-    function saveH(typ) {
-        let entry = { t: typ, d: new Date().toLocaleDateString() };
-        if(typ==='M') { entry.o = document.getElementById('m_list').value; entry.v = document.getElementById('m_lit').value; entry.s = document.getElementById('m_desc').value; }
-        if(typ==='P') { entry.o = document.getElementById('p_list').value; entry.v = document.getElementById('p_cost').value; entry.s = document.getElementById('p_desc').value; }
-        if(typ==='SIN' || typ==='SOUT') { entry.o = document.getElementById('st_name').value; entry.v = document.getElementById('st_qty').value; entry.s = document.getElementById('st_price').value || 'Zbiór'; }
-        if(typ==='ML') { entry.o = 'Mleko'; entry.v = document.getElementById('ml_qty').value; entry.s = document.getElementById('ml_money').value; }
-        db.h.push(entry); save();
-    }
-
-    function save() { localStorage.setItem('agro_v33', JSON.stringify(db)); render(); alert("Zapisano!"); }
-
-    function render() {
-        let m = document.getElementById('m_list'); m.innerHTML = '';
-        db.m.forEach(x => m.innerHTML += `<option value="${x}">${x}</option>`);
-        let p = document.getElementById('p_list'); p.innerHTML = '';
-        db.p.forEach(x => p.innerHTML += `<option value="${x.n}">${x.n} (${x.h}ha)</option>`);
-    }
-
-    function renderStan() {
-        let stan = {};
-        db.h.forEach(x => {
-            if(x.t === 'SIN') stan[x.o] = (stan[x.o]||0) + parseFloat(x.v);
-            if(x.t === 'SOUT') stan[x.o] = (stan[x.o]||0) - parseFloat(x.v);
-        });
-        let out = '';
-        for(let k in stan) out += `<div>${k}: ${stan[k]} t</div>`;
-        document.getElementById('st_stan').innerHTML = out || 'Magazyn pusty';
-    }
-
-    function raport() {
-        let out = '<table><tr><th>Data</th><th>Co</th><th>Opis</th><th>Wartość</th></tr>';
-        db.h.slice().reverse().forEach(x => {
-            out += `<tr><td>${x.d}</td><td>${x.o}</td><td>${x.s}</td><td>${x.v}</td></tr>`;
-        });
-        document.getElementById('rep_out').innerHTML = out + '</table>';
-    }
-</script>
-</body>
-</html>
+        <div class="card" style="border-top: 3px solid var(--a)">
+            <h3 style="color:var(--a); margin-top:0;">⛽ Tankowanie</h3>
+            <label>Data</label><input type="date" class="data-input" id="f_date">
+            <label>C
