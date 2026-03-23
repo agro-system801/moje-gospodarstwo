@@ -65,4 +65,44 @@
         document.getElementById('wynik_p').innerHTML = '<h4>Pola:</h4>' + baza.pola.map(function(p){ return p.n + ' (' + p.h + ' ha)'; }).join(", ");
 
         // Tabela Historii
-        var hHtml
+        var hHtml = '<h4>Ostatnie tankowania:</h4><table><tr><th>Data</th><th>Co</th><th>Ile</th></tr>';
+        baza.historia.forEach(function(h) {
+            hHtml += '<tr><td>'+h.d+'</td><td>'+h.o+'</td><td>'+h.v+' L</td></tr>';
+        });
+        hHtml += '</table>';
+        document.getElementById('wynik_h').innerHTML = hHtml;
+    }
+
+    function dodajMaszyne() {
+        var n = document.getElementById('m_nazwa').value;
+        if(n) { baza.maszyny.push(n); zapiszIBaza(); document.getElementById('m_nazwa').value = ""; }
+    }
+
+    function dodajPole() {
+        var n = document.getElementById('p_nazwa').value;
+        var h = document.getElementById('p_ha').value;
+        if(n && h) { baza.pola.push({n:n, h:h}); zapiszIBaza(); document.getElementById('p_nazwa').value = ""; document.getElementById('p_ha').value = ""; }
+    }
+
+    function zapiszPaliwo() {
+        var m = document.getElementById('m_lista').value;
+        var l = document.getElementById('m_litry').value;
+        if(m && l) {
+            baza.historia.push({d: new Date().toLocaleDateString(), o: m, v: l});
+            zapiszIBaza();
+            document.getElementById('m_litry').value = "";
+        }
+    }
+
+    function zapiszIBaza() {
+        localStorage.setItem('agro_v29', JSON.stringify(baza));
+        odswiezWidok();
+        alert("ZAPISANO!");
+    }
+
+    // Start
+    odswiezWidok();
+</script>
+
+</body>
+</html>
