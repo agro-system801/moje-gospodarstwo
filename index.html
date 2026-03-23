@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AgroManager PRO v39</title>
+    <title>AgroManager PRO v40</title>
     <style>
         :root { --p: #4caf50; --s: #2196f3; --a: #ff9800; --r: #f44336; --m: #00bcd4; --bg: #121212; --card: #1e1e1e; --txt: #e0e0e0; }
         body { font-family: sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 0; }
@@ -50,8 +50,8 @@
             <h3 style="color:var(--a); margin-top:0;">⛽ Tankowanie</h3>
             <label>Data</label><input type="date" class="daty-auto" id="f_dat">
             <label>Ciągnik</label><select class="sel_m" id="f_mac"></select>
-            <label>Litry</label><input type="number" id="f_lit" placeholder="Ilość litrów">
-            <label>Koszt (PLN)</label><input type="number" id="f_pln" placeholder="Suma zł">
+            <label>Ilość litrów</label><input type="number" step="0.01" id="f_lit" placeholder="np. 150">
+            <label>Cena paliwa (za litr)</label><input type="number" step="0.01" id="f_cena" placeholder="np. 6.50">
             <button class="btn" style="background:var(--a)" onclick="zapiszPaliwo()">ZAPISZ PALIWO</button>
         </div>
         <div class="card" style="border-top: 3px solid var(--r)">
@@ -59,7 +59,7 @@
             <label>Data</label><input type="date" class="daty-auto" id="s_dat">
             <label>Ciągnik</label><select class="sel_m" id="s_mac"></select>
             <label>Jaka część?</label><input type="text" id="s_txt" placeholder="np. Olej, Opony">
-            <label>Koszt (PLN)</label><input type="number" id="s_pln" placeholder="Suma zł">
+            <label>Koszt (PLN)</label><input type="number" step="0.01" id="s_pln" placeholder="Suma zł">
             <button class="btn" style="background:var(--r)" onclick="zapiszSerwis()">ZAPISZ SERWIS</button>
         </div>
     </div>
@@ -68,7 +68,7 @@
         <div class="card" style="border-top: 3px solid var(--s)">
             <h3 style="color:var(--s); margin-top:0;">🌱 Pola</h3>
             <input type="text" id="new_p" placeholder="Nazwa pola">
-            <input type="number" id="p_ha" placeholder="Hektary">
+            <input type="number" step="0.01" id="p_ha" placeholder="Hektary">
             <button class="btn" style="background:var(--s)" onclick="dodajPole()">DODAJ POLE</button>
         </div>
         <div class="card">
@@ -76,7 +76,7 @@
             <label>Data</label><input type="date" class="daty-auto" id="p_dat">
             <label>Pole</label><select id="p_list"></select>
             <label>Zabieg / Środek</label><input type="text" id="p_txt" placeholder="np. Siew pszenicy">
-            <label>Koszt całkowity (PLN)</label><input type="number" id="p_pln" placeholder="Suma zł">
+            <label>Koszt całkowity (PLN)</label><input type="number" step="0.01" id="p_pln" placeholder="Suma zł">
             <button class="btn" style="background:var(--s)" onclick="zapiszPole()">ZAPISZ PRACĘ</button>
         </div>
     </div>
@@ -87,8 +87,8 @@
             <div id="stan_txt" style="font-weight:bold; margin-bottom:15px; font-size:16px;"></div>
             <label>Data</label><input type="date" class="daty-auto" id="st_dat">
             <label>Towar</label><input type="text" id="st_nazwa" placeholder="Towar (np. Pszenica)">
-            <label>Ilość (Tony)</label><input type="number" id="st_tony" placeholder="Tony">
-            <label>Zysk ze sprzedaży (PLN)</label><input type="number" id="st_zysk" placeholder="Tylko przy sprzedaży">
+            <label>Ilość (Tony)</label><input type="number" step="0.01" id="st_tony" placeholder="Tony">
+            <label>Zysk ze sprzedaży (PLN)</label><input type="number" step="0.01" id="st_zysk" placeholder="Tylko przy sprzedaży">
             <div style="display:flex; gap:10px; margin-top:10px;">
                 <button class="btn" style="background:var(--p)" onclick="zapiszMagazyn('IN')">PRZYJMIJ Z POLA</button>
                 <button class="btn" style="background:var(--a)" onclick="zapiszMagazyn('OUT')">SPRZEDAJ TOWAR</button>
@@ -100,8 +100,8 @@
         <div class="card" style="border-top: 3px solid var(--m)">
             <h3 style="color:var(--m); margin-top:0;">🥛 Mleko</h3>
             <label>Data</label><input type="date" class="daty-auto" id="ml_dat">
-            <label>Ilość litrów</label><input type="number" id="ml_litry" placeholder="Ilość litrów">
-            <label>Kwota ze sprzedaży (PLN)</label><input type="number" id="ml_pln" placeholder="Zysk PLN">
+            <label>Ilość litrów</label><input type="number" step="0.01" id="ml_litry" placeholder="Ilość litrów">
+            <label>Kwota ze sprzedaży (PLN)</label><input type="number" step="0.01" id="ml_pln" placeholder="Zysk PLN">
             <button class="btn" style="background:var(--m)" onclick="zapiszMleko()">ZAPISZ MLEKO</button>
         </div>
     </div>
@@ -131,13 +131,12 @@
 
 <script>
     let db = { m: [], p: [], h: [] };
-    try { let s = localStorage.getItem('agro_v39'); if(s) db = JSON.parse(s); } catch(e) {}
+    try { let s = localStorage.getItem('agro_v40'); if(s) db = JSON.parse(s); } catch(e) {}
 
     window.onload = function() {
         let dzis = new Date().toISOString().split('T')[0];
         document.querySelectorAll('.daty-auto').forEach(i => i.value = dzis);
         
-        // Domyślne daty w raporcie: od 1 dnia aktualnego miesiąca do dziś
         document.getElementById('r_od').value = dzis.slice(0,8) + "01";
         document.getElementById('r_do').value = dzis;
         
@@ -164,9 +163,22 @@
     function dodajMaszyne() { let v = document.getElementById('new_m').value; if(v){db.m.push(v); save(); document.getElementById('new_m').value='';} }
     function dodajPole() { let n = document.getElementById('new_p').value; let h = document.getElementById('p_ha').value; if(n){db.p.push({n:n, h:h}); save(); document.getElementById('new_p').value=''; document.getElementById('p_ha').value='';} }
 
+    // ZMODYFIKOWANE ZAPISYWANIE PALIWA (AUTOMATYCZNE MNOŻENIE)
     function zapiszPaliwo() { 
-        let d = document.getElementById('f_dat').value, m = document.getElementById('f_mac').value, l = document.getElementById('f_lit').value, c = document.getElementById('f_pln').value;
-        if(m&&l&&c){ db.h.push({t:'PAL', d:d, o:m, v:l, c:c}); save(); document.getElementById('f_lit').value=''; document.getElementById('f_pln').value=''; } else { alert("Wypełnij wszystko!"); }
+        let d = document.getElementById('f_dat').value;
+        let m = document.getElementById('f_mac').value;
+        let litry = document.getElementById('f_lit').value;
+        let cenaZaLitr = document.getElementById('f_cena').value;
+        
+        if(m && litry && cenaZaLitr) { 
+            let calkowityKoszt = (parseFloat(litry) * parseFloat(cenaZaLitr)).toFixed(2);
+            db.h.push({t:'PAL', d:d, o:m, v:litry, c:calkowityKoszt, cena:cenaZaLitr}); 
+            save(); 
+            document.getElementById('f_lit').value=''; 
+            document.getElementById('f_cena').value=''; 
+        } else { 
+            alert("Wypełnij ciągnik, litry i cenę za litr!"); 
+        }
     }
 
     function zapiszSerwis() {
@@ -189,7 +201,7 @@
         if(l&&z){ db.h.push({t:'MLK', d:d, o:'Mleko', v:l, c:z}); save(); document.getElementById('ml_litry').value=''; document.getElementById('ml_pln').value=''; }
     }
 
-    function save() { localStorage.setItem('agro_v39', JSON.stringify(db)); renderListy(); alert("✔️ Zapisano pomyślnie!"); }
+    function save() { localStorage.setItem('agro_v40', JSON.stringify(db)); renderListy(); alert("✔️ Zapisano pomyślnie!"); }
 
     function renderListy() {
         let m_opts = '<option value="">-- wybierz --</option>'; db.m.forEach(x => m_opts += `<option value="${x}">${x}</option>`);
@@ -205,7 +217,7 @@
         document.getElementById('stan_txt').innerHTML = res || '<span style="color:#888;font-weight:normal;">Magazyn pusty</span>';
     }
 
-    // 🔥 PRECYZYJNY RAPORT WSZYSTKIEGO
+    // RAPORT
     function renderRaport() {
         let dOd = document.getElementById('r_od').value;
         let dDo = document.getElementById('r_do').value;
@@ -218,7 +230,6 @@
         let h_list = '<table class="list-table">';
         
         db.h.slice().reverse().forEach(x => {
-            // Filtrujemy Datę
             if(dOd && x.d < dOd) return;
             if(dDo && x.d > dDo) return;
 
@@ -226,12 +237,14 @@
             let val = parseFloat(x.v) || 0;
             let cl = '', txt = '', ico = '';
 
-            // Sumowanie i wygląd do listy na dole
             if(x.t === 'PAL') {
                 if(!paliwoMaszyn[x.o]) paliwoMaszyn[x.o] = { lit: 0, pln: 0 };
                 paliwoMaszyn[x.o].lit += val;
                 paliwoMaszyn[x.o].pln += kw;
-                cl='var(--a)'; txt=`Paliwo: ${x.o} (${val}L)`; ico='⛽';
+                
+                // Pokazujemy cene za litr w historii, jeśli została zapisana w nowej wersji
+                let infoCena = x.cena ? ` po ${x.cena}zł` : '';
+                cl='var(--a)'; txt=`Paliwo: ${x.o} (${val}L${infoCena})`; ico='⛽';
             }
             if(x.t === 'SER') { sumSerwis += kw; cl='var(--r)'; txt=`${x.o}: ${x.s}`; ico='🔧'; }
             if(x.t === 'POL') { sumPole += kw; cl='var(--s)'; txt=`Pole: ${x.o} (${x.s})`; ico='🌱'; }
@@ -244,7 +257,6 @@
         });
         h_list += '</table>';
 
-        // GŁÓWNE BOKSY PODSUMOWUJĄCE
         let podsumowanieHtml = `
             <div class="dash-box" style="border-left-color: var(--m);">
                 <div style="color:var(--m); font-weight:bold; font-size:15px; margin-bottom:8px;">🥛 Mleko</div>
@@ -266,14 +278,15 @@
             </div>
         `;
 
-        // MASZYNY PODSUMOWANIE (jak w poprzedniej wersji)
         let maszynyHtml = '';
         for(let m in paliwoMaszyn) {
+            // Zaokrąglamy spalanie by ładnie wyglądało
+            let kosztForm = paliwoMaszyn[m].pln.toFixed(2);
             maszynyHtml += `
             <div class="dash-box" style="border-left-color: var(--a);">
                 <div style="color:#fff; font-weight:bold; margin-bottom:8px;">🚜 ${m}</div>
                 <div class="dash-row"><span style="color:#aaa">Spalone paliwo:</span> <span style="color:var(--a); font-weight:bold">${paliwoMaszyn[m].lit} L</span></div>
-                <div class="dash-row"><span style="color:#aaa">Koszt paliwa:</span> <span style="color:var(--r); font-weight:bold">-${paliwoMaszyn[m].pln} zł</span></div>
+                <div class="dash-row"><span style="color:#aaa">Koszt paliwa:</span> <span style="color:var(--r); font-weight:bold">-${kosztForm} zł</span></div>
             </div>`;
         }
         if(!maszynyHtml) maszynyHtml = '<div style="color:#888; text-align:center; padding:10px;">Brak tankowań maszyn w tym okresie.</div>';
